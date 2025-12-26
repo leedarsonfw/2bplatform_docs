@@ -123,12 +123,12 @@ APP_DATA_ARCHIVE_REL="2bplatform_docs/$(basename "$APP_DATA_ARCHIVE")"
 # Add files to git using relative paths
 echo "Adding files to git..."
 if [ -f "$EXPORT_FILE" ]; then
-    git add "$EXPORT_FILE_REL"
+    git add "$(basename "$EXPORT_FILE_REL")"
     echo "Added: $EXPORT_FILE_REL"
 fi
 
 if [ -f "$APP_DATA_ARCHIVE" ]; then
-    git add "$APP_DATA_ARCHIVE_REL"
+    git add "$(basename "$APP_DATA_ARCHIVE_REL")"
     echo "Added: $APP_DATA_ARCHIVE_REL"
 fi
 
