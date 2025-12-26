@@ -127,7 +127,7 @@ else
     
     # Push to remote
     echo "Pushing to remote repository..."
-    git push origin main
+    git push origin master
     echo "Git operations completed successfully!"
 fi
 
