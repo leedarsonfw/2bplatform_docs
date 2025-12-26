@@ -1,15 +1,36 @@
 #!/bin/bash
 
-# Periodic scheduler for sync_up.sh
-# Runs sync_up.sh every 1 minute
+# Periodic scheduler for sync_up.sh and sync_down.sh
+# Runs sync script every 1 minute
+# Usage: sync_scheduler.sh {start|stop|restart|status} [up|down]
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SYNC_UP_SCRIPT="$SCRIPT_DIR/sync_up.sh"
-PID_FILE="$SCRIPT_DIR/.sync_scheduler.pid"
-LOG_FILE="$SCRIPT_DIR/sync_scheduler.log"
+SYNC_DOWN_SCRIPT="$SCRIPT_DIR/sync_down.sh"
 INTERVAL=60
+
+# Determine sync mode (up or down), default to up for backward compatibility
+SYNC_MODE="${2:-up}"
+
+if [ "$SYNC_MODE" != "up" ] && [ "$SYNC_MODE" != "down" ]; then
+    echo "Error: Invalid sync mode: $SYNC_MODE (must be 'up' or 'down')"
+    exit 1
+fi
+
+# Set script, PID file, and log file based on mode
+if [ "$SYNC_MODE" = "up" ]; then
+    SYNC_SCRIPT="$SYNC_UP_SCRIPT"
+    PID_FILE="$SCRIPT_DIR/.sync_up_scheduler.pid"
+    LOG_FILE="$SCRIPT_DIR/sync_up_scheduler.log"
+    SCRIPT_NAME="sync_up.sh"
+else
+    SYNC_SCRIPT="$SYNC_DOWN_SCRIPT"
+    PID_FILE="$SCRIPT_DIR/.sync_down_scheduler.pid"
+    LOG_FILE="$SCRIPT_DIR/sync_down_scheduler.log"
+    SCRIPT_NAME="sync_down.sh"
+fi
 
 # Function to log messages
 log_message()
@@ -39,11 +60,11 @@ run_scheduler()
 
     # Main loop
     while true; do
-        log_message "Executing sync_up.sh..."
-        if bash "$SYNC_UP_SCRIPT" >> "$LOG_FILE" 2>&1; then
-            log_message "sync_up.sh completed successfully"
+        log_message "Executing $SCRIPT_NAME..."
+        if bash "$SYNC_SCRIPT" >> "$LOG_FILE" 2>&1; then
+            log_message "$SCRIPT_NAME completed successfully"
         else
-            log_message "sync_up.sh failed with exit code $?"
+            log_message "$SCRIPT_NAME failed with exit code $?"
         fi
 
         log_message "Waiting ${INTERVAL} seconds until next execution..."
@@ -59,14 +80,14 @@ start_scheduler()
         exit 1
     fi
 
-    if [ ! -f "$SYNC_UP_SCRIPT" ]; then
-        echo "Error: sync_up.sh not found at $SYNC_UP_SCRIPT"
+    if [ ! -f "$SYNC_SCRIPT" ]; then
+        echo "Error: $SCRIPT_NAME not found at $SYNC_SCRIPT"
         exit 1
     fi
 
-    if [ ! -x "$SYNC_UP_SCRIPT" ]; then
-        echo "Making sync_up.sh executable..."
-        chmod +x "$SYNC_UP_SCRIPT"
+    if [ ! -x "$SYNC_SCRIPT" ]; then
+        echo "Making $SCRIPT_NAME executable..."
+        chmod +x "$SYNC_SCRIPT"
     fi
 
     # Remove previous log file if it exists
@@ -163,13 +184,23 @@ case "${1:-}" in
         show_status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status}"
+        echo "Usage: $0 {start|stop|restart|status} [up|down]"
         echo ""
         echo "Commands:"
         echo "  start   - Start the scheduler"
         echo "  stop    - Stop the scheduler"
         echo "  restart - Restart the scheduler"
         echo "  status  - Show scheduler status"
+        echo ""
+        echo "Sync Mode (optional, default: up):"
+        echo "  up      - Run sync_up.sh (sync to remote)"
+        echo "  down    - Run sync_down.sh (sync from remote)"
+        echo ""
+        echo "Examples:"
+        echo "  $0 start up    - Start scheduler for sync_up.sh"
+        echo "  $0 start down  - Start scheduler for sync_down.sh"
+        echo "  $0 stop up     - Stop scheduler for sync_up.sh"
+        echo "  $0 status down - Show status for sync_down.sh"
         exit 1
         ;;
 esac

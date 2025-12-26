@@ -98,7 +98,8 @@ echo "Importing database..."
 PGPASSWORD="$DB_PASSWORD" docker-compose exec -T "$DB_SERVICE" psql \
     -U "$DB_USER" \
     -d "$DB_NAME" \
-    < "$SQL_FILE"
+    -q \
+    < "$SQL_FILE" > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
     echo "Database import completed successfully!"
