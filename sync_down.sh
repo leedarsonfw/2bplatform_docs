@@ -43,18 +43,22 @@ if [ ! -s "$SQL_GZ_FILE" ]; then
 fi
 
 echo "Extracting SQL file..."
-if ! gzip -t "$SQL_GZ_FILE" 2>/dev/null; then
-    echo "Error: Invalid gzip archive: $SQL_GZ_FILE"
-    exit 1
-fi
-
 # Remove existing SQL file if it exists
 SQL_FILE="$SCRIPT_DIR/2bplatform_docs.sql"
 if [ -f "$SQL_FILE" ]; then
     rm -f "$SQL_FILE"
 fi
 
-gunzip -c "$SQL_GZ_FILE" > "$SQL_FILE"
+# Test and extract gzip file
+if ! gzip -t "$SQL_GZ_FILE" 2>&1; then
+    echo "Error: Invalid gzip archive: $SQL_GZ_FILE"
+    exit 1
+fi
+
+if ! gunzip -c "$SQL_GZ_FILE" > "$SQL_FILE" 2>&1; then
+    echo "Error: Failed to extract gzip archive: $SQL_GZ_FILE"
+    exit 1
+fi
 
 # Check and extract app_data file
 if [ ! -f "$APP_DATA_TGZ_FILE" ]; then
