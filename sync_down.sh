@@ -27,8 +27,47 @@ fi
 # Pull changes if there are updates
 git pull origin master
 
-tar -xzf "$SCRIPT_DIR/2bplatform_docs.sql.gz" -C "$SCRIPT_DIR" --overwrite
-tar -xzf "$SCRIPT_DIR/app_data.tgz" -C "$SCRIPT_DIR" --overwrite
+# Extract database and app_data files
+SQL_GZ_FILE="$SCRIPT_DIR/2bplatform_docs.sql.gz"
+APP_DATA_TGZ_FILE="$SCRIPT_DIR/app_data.tgz"
+
+# Check and extract SQL file
+if [ ! -f "$SQL_GZ_FILE" ]; then
+    echo "Error: SQL archive not found: $SQL_GZ_FILE"
+    exit 1
+fi
+
+if [ ! -s "$SQL_GZ_FILE" ]; then
+    echo "Error: SQL archive is empty: $SQL_GZ_FILE"
+    exit 1
+fi
+
+echo "Extracting SQL file..."
+if ! tar -tzf "$SQL_GZ_FILE" > /dev/null 2>&1; then
+    echo "Error: Invalid tar archive: $SQL_GZ_FILE"
+    exit 1
+fi
+
+tar -xzf "$SQL_GZ_FILE" -C "$SCRIPT_DIR" --overwrite
+
+# Check and extract app_data file
+if [ ! -f "$APP_DATA_TGZ_FILE" ]; then
+    echo "Error: app_data archive not found: $APP_DATA_TGZ_FILE"
+    exit 1
+fi
+
+if [ ! -s "$APP_DATA_TGZ_FILE" ]; then
+    echo "Error: app_data archive is empty: $APP_DATA_TGZ_FILE"
+    exit 1
+fi
+
+echo "Extracting app_data..."
+if ! tar -tzf "$APP_DATA_TGZ_FILE" > /dev/null 2>&1; then
+    echo "Error: Invalid tar archive: $APP_DATA_TGZ_FILE"
+    exit 1
+fi
+
+tar -xzf "$APP_DATA_TGZ_FILE" -C "$SCRIPT_DIR" --overwrite
 
 # Import database
 
