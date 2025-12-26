@@ -1,0 +1,37 @@
+services:
+  docmost:
+    image: leedarson/document:v1.1
+    depends_on:
+      - docmost_db
+      - docmost_redis
+    environment:
+      APP_URL: 'http://170.106.158.250'
+      APP_NAME: 'LEEDARSON'
+      APP_SECRET: 'b44fc0ef95d4c1525dd953fc1bbf7e23b3ef23cae874722a558fc9cef35a2f4c'
+      DATABASE_URL: 'postgresql://leedarson:lds%40firmware%232025@docmost_db:5432/project_management?schema=public'
+      REDIS_URL: 'redis://docmost_redis:6379'
+    ports:
+      - "80:3000"
+    restart: unless-stopped
+    volumes:
+      - ./app_data:/app/data/storage
+
+  docmost_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: project_management
+      POSTGRES_USER: leedarson
+      POSTGRES_PASSWORD: 'lds@firmware#2025'
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - ./volumes/db_data:/var/lib/postgresql/data
+
+  docmost_redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - ./volumes/redis_data:/data

@@ -3,3 +3,4 @@
 sync_scheduler.log
 app_data
 *.sql
+volumes
