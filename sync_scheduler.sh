@@ -69,6 +69,12 @@ start_scheduler()
         chmod +x "$SYNC_UP_SCRIPT"
     fi
 
+    # Remove previous log file if it exists
+    if [ -f "$LOG_FILE" ]; then
+        echo "Removing previous log file: $LOG_FILE"
+        rm -f "$LOG_FILE"
+    fi
+
     echo "Starting scheduler in background (interval: ${INTERVAL}s)"
     echo "Log file: $LOG_FILE"
 
