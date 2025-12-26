@@ -1,6 +1,6 @@
 .db_size
-.sync_scheduler.pid
-sync_scheduler.log
+*.pid
+*.log
 app_data
 *.sql
 volumes
