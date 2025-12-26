@@ -100,7 +100,7 @@ if [ -d "$APP_DATA_DIR" ]; then
     if [ -f "$APP_DATA_ARCHIVE" ]; then
         rm -f "$APP_DATA_ARCHIVE"
     fi
-    tar zcvf "$APP_DATA_ARCHIVE" app_data
+    tar zcf "$APP_DATA_ARCHIVE" app_data
     echo "app_data packaged: $APP_DATA_ARCHIVE"
     echo "Archive size: $(du -h "$APP_DATA_ARCHIVE" | cut -f1)"
 else
