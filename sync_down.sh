@@ -43,12 +43,18 @@ if [ ! -s "$SQL_GZ_FILE" ]; then
 fi
 
 echo "Extracting SQL file..."
-if ! tar -tzf "$SQL_GZ_FILE" > /dev/null 2>&1; then
-    echo "Error: Invalid tar archive: $SQL_GZ_FILE"
+if ! gzip -t "$SQL_GZ_FILE" 2>/dev/null; then
+    echo "Error: Invalid gzip archive: $SQL_GZ_FILE"
     exit 1
 fi
 
-tar -xzf "$SQL_GZ_FILE" -C "$SCRIPT_DIR" --overwrite
+# Remove existing SQL file if it exists
+SQL_FILE="$SCRIPT_DIR/2bplatform_docs.sql"
+if [ -f "$SQL_FILE" ]; then
+    rm -f "$SQL_FILE"
+fi
+
+gunzip -c "$SQL_GZ_FILE" > "$SQL_FILE"
 
 # Check and extract app_data file
 if [ ! -f "$APP_DATA_TGZ_FILE" ]; then
@@ -79,7 +85,6 @@ if ! docker-compose ps "$DB_SERVICE" | grep -q "Up"; then
 fi
 
 # Import database
-SQL_FILE="$SCRIPT_DIR/2bplatform_docs.sql"
 if [ ! -f "$SQL_FILE" ]; then
     echo "Error: SQL file not found: $SQL_FILE"
     exit 1
