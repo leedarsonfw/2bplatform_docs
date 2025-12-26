@@ -78,6 +78,10 @@ echo "$CURRENT_SIZE" > "$SIZE_CACHE_FILE"
 
 # Compress the export file
 echo "Compressing export file..."
+# Remove existing compressed file if it exists
+if [ -f "${EXPORT_FILE}.gz" ]; then
+    rm -f "${EXPORT_FILE}.gz"
+fi
 gzip "$EXPORT_FILE"
 EXPORT_FILE="${EXPORT_FILE}.gz"
 
@@ -92,6 +96,10 @@ APP_DATA_ARCHIVE="$EXPORT_DIR/app_data.tgz"
 if [ -d "$APP_DATA_DIR" ]; then
     echo "Packaging app_data directory..."
     cd "$EXPORT_DIR"
+    # Remove existing archive if it exists
+    if [ -f "$APP_DATA_ARCHIVE" ]; then
+        rm -f "$APP_DATA_ARCHIVE"
+    fi
     tar zcvf "$APP_DATA_ARCHIVE" app_data
     echo "app_data packaged: $APP_DATA_ARCHIVE"
     echo "Archive size: $(du -h "$APP_DATA_ARCHIVE" | cut -f1)"

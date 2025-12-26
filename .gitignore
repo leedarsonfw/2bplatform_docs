@@ -2,3 +2,4 @@
 .sync_scheduler.pid
 sync_scheduler.log
 app_data
+*.sql
