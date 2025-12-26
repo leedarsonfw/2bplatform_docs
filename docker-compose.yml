@@ -1,6 +1,6 @@
 services:
   docmost:
-    image: leedarson/document:v1.1
+    image: leedarson/document:v1.2
     depends_on:
       - docmost_db
       - docmost_redis
