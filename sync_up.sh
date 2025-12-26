@@ -108,7 +108,7 @@ else
 fi
 
 # Git operations
-cd "$PROJECT_ROOT"
+cd "$PROJECT_ROOT/2bplatform_docs"
 
 # Check if this is a git repository
 if [ ! -d ".git" ]; then
