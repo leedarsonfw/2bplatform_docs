@@ -116,12 +116,20 @@ if [ ! -d ".git" ]; then
     exit 0
 fi
 
-# Add files to git
+# Calculate relative paths from project root
+EXPORT_FILE_REL="2bplatform_docs/$(basename "$EXPORT_FILE")"
+APP_DATA_ARCHIVE_REL="2bplatform_docs/$(basename "$APP_DATA_ARCHIVE")"
+
+# Add files to git using relative paths
 echo "Adding files to git..."
-git add "$EXPORT_FILE"
+if [ -f "$EXPORT_FILE" ]; then
+    git add "$EXPORT_FILE_REL"
+    echo "Added: $EXPORT_FILE_REL"
+fi
 
 if [ -f "$APP_DATA_ARCHIVE" ]; then
-    git add "$APP_DATA_ARCHIVE"
+    git add "$APP_DATA_ARCHIVE_REL"
+    echo "Added: $APP_DATA_ARCHIVE_REL"
 fi
 
 # Check if there are changes to commit
