@@ -1,0 +1,4 @@
+.db_size
+.sync_scheduler.pid
+sync_scheduler.log
+app_data
